@@ -278,10 +278,14 @@ def updateMultilayerResult(resultList, genrelevel):
                 else:
                     row.append(others)
             genredataset.append(row)
-        start += end
+        start = end
 
-        combined_result.append(genredataset)
-        print(genredataset)
+        resultmap = {
+            'label': combinedlable,
+            'incremental_prediction': genredataset
+        }
+        combined_result.append(resultmap)
+        # print(resultmap)
 
 
 
@@ -300,7 +304,7 @@ def updateMultilayerResult(resultList, genrelevel):
         #     'incremental_prediction': style2dataset
         # },
     }
-    return finalresult
+    return combined_result
 
     # return combined_result
 

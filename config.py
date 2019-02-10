@@ -30,8 +30,8 @@ style_port = {
     'pop':"http://aurora.cs.rutgers.edu:9000",
     'raggae':"http://aurora.cs.rutgers.edu:9001",
     'reggae':"http://aurora.cs.rutgers.edu:9001",
-    #'rock':"http://aurora.cs.rutgers.edu:9002",
-    'rock':"http://aurora.cs.rutgers.edu:12001",
+    'rock':"http://aurora.cs.rutgers.edu:9002",
+    # 'rock':"http://aurora.cs.rutgers.edu:12001",
     'metal':"http://aurora.cs.rutgers.edu:12004",
     'heavy':"http://aurora.cs.rutgers.edu:12004",
     'indu':"http://aurora.cs.rutgers.edu:12005"
