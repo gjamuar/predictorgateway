@@ -105,7 +105,7 @@ def predict_multilayer(youtube_id):
 
         style1 = style1RespObj['combinedprediction_withlable'][0][0]
 
-    combinedresult  = updateMultilayerResult(resultlist, 2)
+    combinedresult  = updateMultilayerResult(resultlist, 3)
 
     # return jsonify(resultlist)
     return jsonify(combinedresult)
@@ -250,7 +250,7 @@ def updateMultilayerResult(resultList, genrelevel):
 
     for i, result in enumerate(resultList):
         index_dict[i] = genrelevel
-        buildLableWithIndex(combinedlable, result, genrelevel,index_dict, i)
+        buildLableWithIndex(combinedlable, result, min(genrelevel,len(result['label'])),index_dict, i)
 
     combinedlable.append(u'others')
     print('combinedlable: {}'.format(combinedlable))
