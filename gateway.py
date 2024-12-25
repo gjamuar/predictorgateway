@@ -99,11 +99,15 @@ def predict_multilayer(youtube_id):
         print(style1)
         style1Req = config.style_port[style1] + config.flask_app_context + youtube_id
         print(style1Req)
-        style1Resp = requests.get(style1Req)
-        style1RespObj = json.loads(style1Resp.text)
-        resultlist.append(style1RespObj)
+        try:
+            style1Resp = requests.get(style1Req)
+            style1RespObj = json.loads(style1Resp.text)
+            resultlist.append(style1RespObj)
 
-        style1 = style1RespObj['combinedprediction_withlable'][0][0]
+            style1 = style1RespObj['combinedprediction_withlable'][0][0]
+        except Exception as e:
+            print(e)
+            break
 
     combinedresult  = updateMultilayerResult(resultlist, 3)
 
