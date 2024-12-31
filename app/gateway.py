@@ -3,10 +3,9 @@ from flask import Flask, jsonify, abort, make_response, request
 # from genres_predictor import GenrePredictor
 import json
 # import db_utility
-import loggingmodule
 import argparse
 import os
-import config
+from app import config
 
 skipdb = True
 
@@ -30,9 +29,9 @@ tasks = [
 
 # genres_predictor = GenrePredictor('models_for_prediction/1st_level/', '9353', 4)
 # style_predictor = GenrePredictor('models_for_prediction/2nd_level/blues/', '8231', 13)
-@app.route('/todo/api/v1.0/tasks', methods=['GET'])
-def get_tasks():
-    return jsonify({'tasks': tasks})
+# @app.route('/todo/api/v1.0/tasks', methods=['GET'])
+# def get_tasks():
+#     return jsonify({'tasks': tasks})
 
 
 def get_genresCount():
@@ -42,106 +41,117 @@ def get_genresCount():
         genreCount = len(fo.readlines())
     else:
         genreCount = -1
-    print 'Returning :' + str(genreCount)
+    print('Returning :' + str(genreCount))
     return genreCount
 
 
 def get_predictorname():
-    list_meta_files = [os.path.join(params['path'], f) for f in os.listdir(params['path']) if f.endswith(".meta")]
+    list_meta_files = [
+        os.path.join(
+            params['path'],
+            f) for f in os.listdir(
+            params['path']) if f.endswith(".meta")]
     # files = os.system('find '+params['path']+' -name "[0-9]*.meta" ')
     predict_name = ''
     if (len(list_meta_files) > 0):
         predict_name = os.path.splitext(os.path.basename(list_meta_files[0]))[0]
     else:
-        print 'cant find meta file'
-    print predict_name
+        print('cant find meta file')
+    print(predict_name)
     return predict_name
 
 
-@app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['GET'])
-def get_task(task_id):
-    task = [task for task in tasks if task['id'] == task_id]
-    if len(task) == 0:
-        abort(404)
-    return jsonify({'task': task[0]})
-
-
-@app.route('/todo/api/v1.0/tasks', methods=['POST'])
-def create_task():
-    if not request.json or not 'title' in request.json:
-        abort(400)
-    task = {
-        'id': tasks[-1]['id'] + 1,
-        'title': request.json['title'],
-        'description': request.json.get('description', ""),
-        'done': False
-    }
-    tasks.append(task)
-    return jsonify({'task': task}), 201
+# @app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['GET'])
+# def get_task(task_id):
+#     task = [task for task in tasks if task['id'] == task_id]
+#     if len(task) == 0:
+#         abort(404)
+#     return jsonify({'task': task[0]})
+#
+#
+# @app.route('/todo/api/v1.0/tasks', methods=['POST'])
+# def create_task():
+#     if not request.json or 'title' not in request.json:
+#         abort(400)
+#     task = {
+#         'id': tasks[-1]['id'] + 1,
+#         'title': request.json['title'],
+#         'description': request.json.get('description', ""),
+#         'done': False
+#     }
+#     tasks.append(task)
+#     return jsonify({'task': task}), 201
 
 
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
-@app.route('/gramusik/v1/predictmultilayer/<string:youtube_id>', methods=['GET'])
-def predict_multilayer(youtube_id):
-    req = config.flask_host_port + config.flask_app_context + youtube_id
-    print(req)
-    r = requests.get(req)
-    respobj = json.loads(r.text)
-    style1 = respobj['combinedprediction_withlable'][0][0]
-    resultlist = []
 
-    resultlist.append(respobj)
+# @app.route('/gramusik/v1/predictmultilayer/<string:youtube_id>', methods=['GET'])
+# def predict_multilayer(youtube_id):
+#     req = config.flask_host_port + config.flask_app_context + youtube_id
+#     print(req)
+#     r = requests.get(req)
+#     respobj = json.loads(r.text)
+#     style1 = respobj['combinedprediction_withlable'][0][0]
+#     resultlist = []
+#
+#     resultlist.append(respobj)
+#
+#     while style1 in config.style_port:
+#         print(style1)
+#         style1Req = config.style_port[style1] + config.flask_app_context + youtube_id
+#         print(style1Req)
+#         try:
+#             style1Resp = requests.get(style1Req)
+#             style1RespObj = json.loads(style1Resp.text)
+#             resultlist.append(style1RespObj)
+#
+#             style1 = style1RespObj['combinedprediction_withlable'][0][0]
+#         except Exception as e:
+#             print(e)
+#             break
+#
+#     combinedresult = updateMultilayerResult(resultlist, 3)
+#
+#     # return jsonify(resultlist)
+#     return jsonify(combinedresult)
+#
+#
+# @app.route('/gramusik/v1/predictcombined/<string:youtube_id>', methods=['GET'])
+# def predict_combined(youtube_id):
+#     req = config.flask_host_port + config.flask_app_context + youtube_id
+#     print(req)
+#     r = requests.get(req)
+#     respobj = json.loads(r.text)
+#     style1 = respobj['combinedprediction_withlable'][0][0]
+#     style2 = respobj['combinedprediction_withlable'][1][0]
+#     print(style1)
+#     print(style2)
+#     if style1 in config.style_port:
+#         style1Req = config.style_port[style1] + config.flask_app_context + youtube_id
+#         print(style1Req)
+#         style1Resp = requests.get(style1Req)
+#         style1RespObj = json.loads(style1Resp.text)
+#
+#     if style2 in config.style_port:
+#         style2Req = config.style_port[style2] + config.flask_app_context + youtube_id
+#         print(style2Req)
+#         style2Resp = requests.get(style2Req)
+#         style2RespObj = json.loads(style2Resp.text)
+#
+#     combinedresult = updateGenreResult(respobj, style1RespObj, style2RespObj, 4, 3)
+#
+#     return jsonify(combinedresult)
 
-    while style1 in config.style_port:
-        print(style1)
-        style1Req = config.style_port[style1] + config.flask_app_context + youtube_id
-        print(style1Req)
-        try:
-            style1Resp = requests.get(style1Req)
-            style1RespObj = json.loads(style1Resp.text)
-            resultlist.append(style1RespObj)
 
-            style1 = style1RespObj['combinedprediction_withlable'][0][0]
-        except Exception as e:
-            print(e)
-            break
-
-    combinedresult  = updateMultilayerResult(resultlist, 3)
-
-    # return jsonify(resultlist)
-    return jsonify(combinedresult)
-
-@app.route('/gramusik/v1/predictcombined/<string:youtube_id>', methods=['GET'])
-def predict_combined(youtube_id):
-    req = config.flask_host_port + config.flask_app_context + youtube_id
-    print(req)
-    r = requests.get(req)
-    respobj = json.loads(r.text)
-    style1 = respobj['combinedprediction_withlable'][0][0]
-    style2 = respobj['combinedprediction_withlable'][1][0]
-    print(style1)
-    print(style2)
-    if style1 in config.style_port:
-        style1Req = config.style_port[style1] + config.flask_app_context + youtube_id
-        print(style1Req)
-        style1Resp = requests.get(style1Req)
-        style1RespObj = json.loads(style1Resp.text)
-
-    if style2 in config.style_port:
-        style2Req = config.style_port[style2] + config.flask_app_context + youtube_id
-        print(style2Req)
-        style2Resp = requests.get(style2Req)
-        style2RespObj = json.loads(style2Resp.text)
-
-    combinedresult  = updateGenreResult(respobj, style1RespObj, style2RespObj, 4, 3)
-
-    return jsonify(combinedresult)
-
-
-def updateGenreResult(genreresult, style1RespObj, style2RespObj, genrelevel, stylelevel):
+def updateGenreResult(
+        genreresult,
+        style1RespObj,
+        style2RespObj,
+        genrelevel,
+        stylelevel):
     combinedlable = []
 
     buildLable(combinedlable, genreresult, genrelevel)
@@ -157,7 +167,8 @@ def updateGenreResult(genreresult, style1RespObj, style2RespObj, genrelevel, sty
         others = 100
         for j in range(len(combinedlable)):
             if j < genrelevel:
-                value = genreresult['incremental_prediction'][i][genreresult['label'].index(combinedlable[j])]
+                value = genreresult['incremental_prediction'][i][genreresult['label'].index(
+                    combinedlable[j])]
                 others = others - value
                 row.append(value)
             elif j < (len(combinedlable) - 1):
@@ -177,7 +188,8 @@ def updateGenreResult(genreresult, style1RespObj, style2RespObj, genrelevel, sty
             if j < genrelevel:
                 row.append(0)
             elif j < (len(combinedlable) - stylelevel - 1):
-                value = style1RespObj['incremental_prediction'][i][style1RespObj['label'].index(combinedlable[j])]
+                value = style1RespObj['incremental_prediction'][i][style1RespObj['label'].index(
+                    combinedlable[j])]
                 others = others - value
                 row.append(value)
             elif j < (len(combinedlable) - 1):
@@ -199,7 +211,8 @@ def updateGenreResult(genreresult, style1RespObj, style2RespObj, genrelevel, sty
             elif j < (len(combinedlable) - stylelevel - 1):
                 row.append(0)
             elif j < (len(combinedlable) - 1):
-                value = style2RespObj['incremental_prediction'][i][style2RespObj['label'].index(combinedlable[j])]
+                value = style2RespObj['incremental_prediction'][i][style2RespObj['label'].index(
+                    combinedlable[j])]
                 others = others - value
                 row.append(value)
             else:
@@ -226,6 +239,7 @@ def updateGenreResult(genreresult, style1RespObj, style2RespObj, genrelevel, sty
 
     return finalresult
 
+
 def buildLable(combinedlable, resultObj, level):
     for i in range(level):
         combinedlable.append(resultObj['combinedprediction_withlable'][i][0])
@@ -243,8 +257,6 @@ def buildLableWithIndex(combinedlable, resultObj, level, index_dict, i):
         combinedlable.append(resultObj['combinedprediction_withlable'][i][0])
 
 
-
-
 def updateMultilayerResult(resultList, genrelevel):
     genreresult = ''
     style1RespObj = ''
@@ -254,7 +266,10 @@ def updateMultilayerResult(resultList, genrelevel):
 
     for i, result in enumerate(resultList):
         index_dict[i] = genrelevel
-        buildLableWithIndex(combinedlable, result, min(genrelevel,len(result['label'])),index_dict, i)
+        buildLableWithIndex(
+            combinedlable, result, min(
+                genrelevel, len(
+                    result['label'])), index_dict, i)
 
     combinedlable.append(u'others')
     print('combinedlable: {}'.format(combinedlable))
@@ -274,7 +289,8 @@ def updateMultilayerResult(resultList, genrelevel):
                     row.append(0)
                 elif j < end:
 
-                    value = result['incremental_prediction'][i][result['label'].index(combinedlable[j])]
+                    value = result['incremental_prediction'][i][result['label'].index(
+                        combinedlable[j])]
                     others = others - value
                     row.append(value)
                 elif j < (len(combinedlable) - 1):
@@ -290,8 +306,6 @@ def updateMultilayerResult(resultList, genrelevel):
         }
         combined_result.append(resultmap)
         # print(resultmap)
-
-
 
     finalresult = {
         'label': combinedlable,
@@ -311,7 +325,6 @@ def updateMultilayerResult(resultList, genrelevel):
     return combined_result
 
     # return combined_result
-
 
 
 if __name__ == '__main__':
